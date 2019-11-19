@@ -2350,11 +2350,13 @@ if(!defined('PHP_CGP_CLI_CLASS')) {
                         $data = str_replace('\"','\\\"',$data);
                     }
 
-                    $data = preg_replace("/([\\x00-\\x1F\\x7F])/e",
-                                "'\\' . 
-                                str_repeat('0',( 3 - strlen(ord('\\1')) ) ) . 
-                                ord('\\1')",
-                                $data);
+                    $data = preg_replace_callback("/([\\x00-\\x1F\\x7F])/",
+                             function($matches) {
+                              foreach($matches as $match) {
+                               return '\\' . str_repeat('0',( 3 - strlen(ord($match)) ) ) . ord($match);
+                              }
+                             },
+                             $data);
 
                     return '"'.$data.'"';
                 } else {
